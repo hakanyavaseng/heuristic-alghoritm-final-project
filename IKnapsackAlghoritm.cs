@@ -1,4 +1,6 @@
-﻿namespace HeuristicAlgFinalProject;
+﻿using System.Collections.Generic;
+
+namespace HeuristicAlgFinalProject;
 
 public interface IKnapsackAlgorithm
 {

@@ -1,6 +1,10 @@
-﻿namespace HeuristicAlgFinalProject
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace HeuristicAlgFinalProject
 {
-    public class ArtificialBeeColonyKnapsack : IKnapsackAlgorithm
+        public class ArtificialBeeColonyKnapsack : IKnapsackAlgorithm
     {
         private List<(int, int)> _items; // (value, weight)
         private int _knapsackCapacity;
@@ -18,6 +22,8 @@
             _currentPopulation = new List<List<int>>();
             _bestSolution = new List<int>();
 
+            Console.WriteLine($"Knapsack Dimensions: Items = {_items.Count}, Capacity = {_knapsackCapacity}, Bees = {_numBees}, Max Iterations = {_maxIterations}");
+
             // Initialize population
             for (int i = 0; i < numBees; i++)
             {
@@ -25,6 +31,9 @@
             }
 
             _bestSolution = _currentPopulation[0];
+
+            Console.WriteLine("Initial Population:");
+            PrintPopulation(_currentPopulation);
         }
 
         private List<int> GenerateSolution()
@@ -33,7 +42,6 @@
             return _items.Select(item => rand.Next(2)).ToList();
         }
 
-        // Updated fitness evaluation that incorporates capacity usage
         private int EvaluateFitness(List<int> solution)
         {
             int totalValue = 0;
@@ -48,15 +56,13 @@
                 }
             }
 
-            // Apply penalty if weight exceeds capacity
             if (totalWeight > _knapsackCapacity)
             {
                 return 0; // Penalize overweight solutions
             }
 
-            // Reward for using the knapsack capacity efficiently
             double capacityUsage = (double)totalWeight / _knapsackCapacity;
-            double fitness = totalValue * capacityUsage; // Fitness increases with better capacity usage
+            double fitness = totalValue * capacityUsage;
 
             return (int)fitness;
         }
@@ -74,6 +80,8 @@
         {
             for (int iteration = 0; iteration < _maxIterations; iteration++)
             {
+                Console.WriteLine($"\nIteration {iteration + 1}:");
+
                 // Employed Bee Phase
                 for (int i = 0; i < _numBees / 2; i++)
                 {
@@ -109,6 +117,8 @@
                         _bestSolution = solution;
                     }
                 }
+
+                Console.WriteLine("Best Solution So Far: " + string.Join(",", _bestSolution) + $" Fitness = {EvaluateFitness(_bestSolution)}");
             }
 
             return (_bestSolution, EvaluateFitness(_bestSolution));
@@ -130,7 +140,15 @@
                 }
             }
 
-            return probabilities.Count - 1; // Should never reach here if probabilities are normalized
+            return probabilities.Count - 1;
+        }
+
+        private void PrintPopulation(List<List<int>> population)
+        {
+            for (int i = 0; i < population.Count; i++)
+            {
+                Console.WriteLine($"Bee {i + 1}: " + string.Join(",", population[i]) + $" Fitness = {EvaluateFitness(population[i])}");
+            }
         }
     }
 }
